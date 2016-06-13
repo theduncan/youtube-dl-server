@@ -5,16 +5,19 @@
 #
 
 # Pull base image.
-FROM python:3-onbuild
+FROM ampervue/ffmpeg
+#FROM python:3-onbuild
 
-# Install ffmpeg.
-RUN \
-  apt-get update && \
-  apt-get install -y libav-tools && \
-  rm -rf /var/lib/apt/lists/*
-  
-EXPOSE 8080
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
 
-VOLUME ["/youtube-dl"]
+COPY requirements.txt /usr/src/app/
+RUN pip install --no-cache-dir -r requirements.txt
 
-CMD [ "python", "-u", "./youtube-dl-server.py" ]
+COPY . /usr/src/app
+
+EXPOSE 8081
+
+VOLUME ["/dl"]
+
+CMD [ "python", "-u", "/usr/src/app/youtube-dl-server.py" ]
