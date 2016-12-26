@@ -23,10 +23,10 @@ def q_size():
 def q_put():
     url = request.forms.get( "url" )
 	
-	if ( request.forms.get( "media" ) != "" ):
-		media = request.forms.get( "media" )
-	else:
-		media = "video"
+    if ( request.forms.get( "media" ) != "" ):
+        media = request.forms.get( "media" )
+    else:
+        media = "video"
 		
     if "" != url:
         dl_q.put( url, media )
@@ -43,12 +43,12 @@ def dl_worker():
 
 def download(url, media):
     print("Starting " + media + " download of " + url)
-	if (media == "audio" ) :
-		command = ['/usr/local/bin/youtube-dl', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', '-x', '--audio-format=mp3', '--audio-quality=0', url]
-	else:
-		command = ['/usr/local/bin/youtube-dl', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', url]
+    if (media == "audio" ) :
+        command = ['/usr/local/bin/youtube-dl', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', '-x', '--audio-format=mp3', '--audio-quality=0', url]
+    else:
+        command = ['/usr/local/bin/youtube-dl', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', url]
 		
-	subprocess.call(command, shell=False)
+    subprocess.call(command, shell=False)
     print("Finished " + media + " downloading " + url)
 
 dl_q = Queue();
