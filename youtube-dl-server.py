@@ -5,6 +5,18 @@ from queue import Queue
 from bottle import route, run, Bottle, request, static_file
 from threading import Thread
 
+class Job(object):
+    def __init__(self, url, media):
+        self.url = url
+        self.media = media
+        print 'New '+ media +' download: ', url
+        return
+    def __cmp__(self, other):
+        return cmp(self.url, other.media)
+
+
+
+
 app = Bottle()
 
 @app.route('/yt')
@@ -29,7 +41,7 @@ def q_put():
         media = "video"
 		
     if "" != url:
-        dl_q.put( url, media )
+        dl_q.put( job(url, media) )
         print("Added url " + url + " to the download queue")
         return { "success" : True, "url" : url }
     else:
@@ -38,18 +50,18 @@ def q_put():
 def dl_worker():
     while not done:
         item = dl_q.get()
-        download(item.url, item.media)
+        download(item)
         dl_q.task_done()
 
-def download(url, media):
-    print("Starting " + media + " download of " + url)
+def download(item):
+    print("Starting " + item.media + " download of " + item.url)
     if (media == "audio" ) :
-        command = ['/usr/local/bin/youtube-dl', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', '-x', '--audio-format=mp3', '--audio-quality=0', url]
+        command = ['/usr/local/bin/youtube-dl', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', '-x', '--audio-format=mp3', '--audio-quality=0', item.url]
     else:
-        command = ['/usr/local/bin/youtube-dl', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', url]
+        command = ['/usr/local/bin/youtube-dl', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', item.url]
 		
     subprocess.call(command, shell=False)
-    print("Finished " + media + " downloading " + url)
+    print("Finished " + item.media + " downloading " + item.url)
 
 dl_q = Queue();
 done = False;
