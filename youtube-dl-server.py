@@ -38,7 +38,7 @@ def q_put():
 def dl_worker():
     while not done:
         item = dl_q.get()
-        download(item, media)
+        download(item.url, item.media)
         dl_q.task_done()
 
 def download(url, media):
