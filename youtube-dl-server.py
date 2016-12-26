@@ -55,7 +55,7 @@ def dl_worker():
 
 def download(item):
     print("Starting " + item.media + " download of " + item.url)
-    if (media == "audio" ) :
+    if (item.media == "audio" ) :
         command = ['/usr/local/bin/youtube-dl', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', '-x', '--audio-format=mp3', '--audio-quality=0', item.url]
     else:
         command = ['/usr/local/bin/youtube-dl', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', item.url]
