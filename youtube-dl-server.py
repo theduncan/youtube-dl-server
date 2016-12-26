@@ -41,7 +41,7 @@ def q_put():
         media = "video"
 		
     if "" != url:
-        dl_q.put( job(url, media) )
+        dl_q.put( Job(url, media) )
         print("Added url " + url + " to the download queue")
         return { "success" : True, "url" : url }
     else:
