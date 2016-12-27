@@ -18,7 +18,7 @@ class Job(object):
 
 
 
-beanstalk = beanstalkc.Connection(host='localhost', port=14711)
+beanstalk = beanstalkc.Connection(host='localhost', port=11300)
 beanstalk.use('MSG')
 
 app = Bottle()
