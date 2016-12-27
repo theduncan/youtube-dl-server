@@ -1,7 +1,7 @@
 import json
 import os
 import subprocess
-import beanstalkc
+from pystalkd.Beanstalkd import Connection
 from queue import Queue
 from bottle import route, run, Bottle, request, static_file
 from threading import Thread
@@ -18,7 +18,7 @@ class Job(object):
 
 
 
-beanstalk = beanstalkc.Connection(host='localhost', port=11300)
+beanstalk = Connection("localhost", 11300) 
 beanstalk.use('MSG')
 
 app = Bottle()
