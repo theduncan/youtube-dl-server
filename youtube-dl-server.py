@@ -1,6 +1,7 @@
 import json
 import os
 import subprocess
+import beanstalkc
 from queue import Queue
 from bottle import route, run, Bottle, request, static_file
 from threading import Thread
@@ -9,6 +10,7 @@ class Job(object):
     def __init__(self, url, media):
         self.url = url
         self.media = media
+	self.msg = '1'
         print ('New '+ media +' download: ', url)
         return
     def __cmp__(self, other):
@@ -16,6 +18,8 @@ class Job(object):
 
 
 
+beanstalk = beanstalkc.Connection(host='localhost', port=14711)
+beanstalk.use('MSG')
 
 app = Bottle()
 
@@ -55,6 +59,8 @@ def dl_worker():
 
 def download(item):
     print("Starting " + item.media + " download of " + item.url)
+    if ( item.msg == '1' ) :
+        beanstalk.put("Starting " + item.media + " download of " + item.url)
     if (item.media == "audio" ) :
         command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', '-x', '--audio-format=mp3', '--audio-quality=0', item.url]
     else:
@@ -62,6 +68,8 @@ def download(item):
 		
     subprocess.call(command, shell=False)
     print("Finished " + item.media + " downloading " + item.url)
+    if ( item.msg == '1' ) :
+        beanstalk.put("Starting " + item.media + " download of " + item.url)
 
 dl_q = Queue();
 done = False;
