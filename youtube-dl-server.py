@@ -10,7 +10,7 @@ class Job(object):
     def __init__(self, url, media):
         self.url = url
         self.media = media
-	self.msg = '1'
+        self.msg = '1'
         print ('New '+ media +' download: ', url)
         return
     def __cmp__(self, other):
