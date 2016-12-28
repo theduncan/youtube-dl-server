@@ -1,6 +1,8 @@
 import json
 import os
 import subprocess
+import uuid
+from array import array
 from pystalkd.Beanstalkd import Connection
 from queue import Queue
 from bottle import route, run, Bottle, request, static_file
@@ -11,10 +13,20 @@ class Job(object):
         self.url = url
         self.media = media
         self.msg = '1'
+        self.progress = 'new'
+        self.ID = uuid.uuid1()
         print ('New '+ media +' download: ', url)
-        return
-    def __cmp__(self, other):
-        return cmp(self.url, other.media)
+        return uuid.uuid1()
+        
+    def SetProgress(self, progress)
+        self.progress = progress
+        
+    def GetProgress (self)
+        return self.progress
+    
+    def GetInfo (self)
+    rtn = array (self.ID, self.url, self.media, self.msg, self.progress)
+    return rtn
 
 
 
@@ -45,11 +57,13 @@ def q_put():
         media = "video"
 		
     if "" != url:
-        dl_q.put( Job(url, media) )
-        print("Added url " + url + " to the download queue")
-        return { "success" : True, "url" : url }
+        CurJob = new Job(url, media)
+        dl_q.put( CurJob )
+        print("URL: "+ CurJob.url ) 
+        beanstalk.put( CurJob.GetInfo())
+        return ( "Job_ID" : CurJob.ID, "Media" : CurJob.media, "Return_Message" : CurJob.msg, "Progress" : CurJob.progress)
     else:
-        return { "success" : False, "error" : "yt called without a url" }
+        return { "Job_ID" : "Failed", "error" : "URL error" }
 
 def dl_worker():
     while not done:
@@ -58,18 +72,20 @@ def dl_worker():
         dl_q.task_done()
 
 def download(item):
+    item.SetProgress('Starting')
     print("Starting " + item.media + " download of " + item.url)
     if ( item.msg == '1' ) :
-        beanstalk.put("Starting " + item.media + " download of " + item.url)
+        beanstalk.put(item.GetInfo())
     if (item.media == "audio" ) :
         command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', '-x', '--audio-format=mp3', '--audio-quality=0', item.url]
     else:
         command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', item.url]
 		
     subprocess.call(command, shell=False)
-    print("Finished " + item.media + " downloading " + item.url)
+    item.SetProgress('Finished')
     if ( item.msg == '1' ) :
-        beanstalk.put("Starting " + item.media + " download of " + item.url)
+        beanstalk.put(item.GetInfo())
+    print("Finished " + item.media + " downloading " + item.url)
 
 dl_q = Queue();
 done = False;
