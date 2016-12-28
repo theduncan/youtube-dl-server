@@ -25,8 +25,8 @@ class Job(object):
     def GetProgress (self):
         return self.progress
     
-    def GetInfo (self):
-        rtn = array (self.ID, self.url, self.media, self.msg, self.progress)
+    def GetJobStatus_MSG (self):
+        rtn = [{ "ID" : str(self.ID), "URL" : self.url, "Media" : self.media,  "Progress" : self.progress}]
         return rtn
 
 
@@ -61,11 +61,11 @@ def q_put():
         CurJob = Job(url, media)
         dl_q.put( CurJob )
         print("URL: "+ CurJob.url ) 
-        beanstalk.put( CurJob.GetInfo())
+        beanstalk.put(dumps(item.GetJobStatus_MSG()))
         rtn = [{ "Job_ID" : CurJob.ID, "Media" : CurJob.media, "Return_Message" : CurJob.msg, "Progress" : CurJob.progress }]
     else:
         rtn =  [{ "Job_ID" : "Failed", "error" : "URL error" }]
-    return ( rtn )
+    return ( dumps(rtn) )
 
 def dl_worker():
     while not done:
@@ -77,7 +77,7 @@ def download(item):
     item.SetProgress('Starting')
     print("Starting " + item.media + " download of " + item.url)
     if ( item.msg == '1' ) :
-        beanstalk.put(item.GetInfo())
+        beanstalk.put(dumps(item.GetJobStatus_MSG()))
     if (item.media == "audio" ) :
         command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', '-x', '--audio-format=mp3', '--audio-quality=0', item.url]
     else:
@@ -86,7 +86,7 @@ def download(item):
     subprocess.call(command, shell=False)
     item.SetProgress('Finished')
     if ( item.msg == '1' ) :
-        beanstalk.put(item.GetInfo())
+        beanstalk.put(dumps(item.GetJobStatus_MSG()))
     print("Finished " + item.media + " downloading " + item.url)
 
 dl_q = Queue();
