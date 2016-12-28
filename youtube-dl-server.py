@@ -3,6 +3,7 @@ import os
 import subprocess
 import uuid
 from array import array
+from json import dumps
 from pystalkd.Beanstalkd import Connection
 from queue import Queue
 from bottle import route, run, Bottle, request, static_file
@@ -61,9 +62,10 @@ def q_put():
         dl_q.put( CurJob )
         print("URL: "+ CurJob.url ) 
         beanstalk.put( CurJob.GetInfo())
-        return ( "Job_ID" : CurJob.ID, "Media" : CurJob.media, "Return_Message" : CurJob.msg, "Progress" : CurJob.progress)
+        rtn = [{ "Job_ID" : CurJob.ID, "Media" : CurJob.media, "Return_Message" : CurJob.msg, "Progress" : CurJob.progress }]
     else:
-        return { "Job_ID" : "Failed", "error" : "URL error" }
+        rtn =  [{ "Job_ID" : "Failed", "error" : "URL error" }]
+    return ( rtn )
 
 def dl_worker():
     while not done:
