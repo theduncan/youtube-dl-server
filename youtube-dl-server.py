@@ -17,7 +17,7 @@ class Job(object):
         self.progress = 'new'
         self.ID = uuid.uuid1()
         print ('New '+ media +' download: ', url)
-        return uuid.uuid1()
+        return
         
     def SetProgress(self, progress):
         self.progress = progress
