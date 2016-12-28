@@ -18,13 +18,13 @@ class Job(object):
         print ('New '+ media +' download: ', url)
         return uuid.uuid1()
         
-    def SetProgress(self, progress)
+    def SetProgress(self, progress):
         self.progress = progress
         
-    def GetProgress (self)
+    def GetProgress (self):
         return self.progress
     
-    def GetInfo (self)
+    def GetInfo (self):
     rtn = array (self.ID, self.url, self.media, self.msg, self.progress)
     return rtn
 
