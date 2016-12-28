@@ -25,8 +25,8 @@ class Job(object):
         return self.progress
     
     def GetInfo (self):
-    rtn = array (self.ID, self.url, self.media, self.msg, self.progress)
-    return rtn
+        rtn = array (self.ID, self.url, self.media, self.msg, self.progress)
+        return rtn
 
 
 
