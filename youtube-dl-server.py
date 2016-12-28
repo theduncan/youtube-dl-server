@@ -57,7 +57,7 @@ def q_put():
         media = "video"
 		
     if "" != url:
-        CurJob = new Job(url, media)
+        CurJob = Job(url, media)
         dl_q.put( CurJob )
         print("URL: "+ CurJob.url ) 
         beanstalk.put( CurJob.GetInfo())
