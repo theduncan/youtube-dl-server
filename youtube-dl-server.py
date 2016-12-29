@@ -87,6 +87,7 @@ def download(item):
     item.SetProgress('Finished')
     if ( item.msg == '1' ) :
         beanstalk.put(dumps(item.GetJobStatus_MSG()))
+        print ("test", dumps(item.GetJobStatus_MSG()))
     print("Finished " + item.media + " downloading " + item.url)
 
 dl_q = Queue();
