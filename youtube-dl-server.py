@@ -62,9 +62,9 @@ def q_put():
         dl_q.put( CurJob )
         print("URL: "+ CurJob.url ) 
         beanstalk.put(dumps(CurJob.GetJobStatus_MSG()))
-        rtn = [{ "Job_ID" : str(CurJob.ID), "Media" : CurJob.media, "Return_Message" : CurJob.msg, "Progress" : CurJob.progress }]
+        rtn = ["return", { "Job_ID" : str(CurJob.ID), "Media" : CurJob.media, "Return_Message" : CurJob.msg, "Progress" : CurJob.progress }]
     else:
-        rtn =  [{ "Job_ID" : "Failed", "error" : "URL error" }]
+        rtn =  ["return", { "Job_ID" : "Failed", "error" : "URL error" }]
     return ( dumps(rtn) )
 
 def dl_worker():
