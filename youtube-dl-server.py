@@ -5,7 +5,6 @@ import uuid
 import redis
 from array import array
 from json import dumps
-from pystalkd.Beanstalkd import Connection
 from queue import Queue
 from bottle import route, run, Bottle, request, static_file
 from threading import Thread
