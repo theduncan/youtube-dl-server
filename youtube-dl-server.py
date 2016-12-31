@@ -165,7 +165,7 @@ done = False;
 dl_thread = Thread(target=dl_worker)
 dl_thread.start()
 
-log.put("YT: Started download thread")
+log_q.put("YT: Started download thread")
 
 app.run(host='0.0.0.0', port=9191, debug=True)
 done = True
