@@ -137,15 +137,15 @@ def dl_Playlist_Check(url):
 def download(item):
     item.SetProgress('Starting')
     item.SetPlaylist(dl_Playlist_Check(item.url)
-    if ( log == True ) :
+    if ( log == True ):
         log.put(dumps(item.GetJobStatus_MSG()))
     if ( item.GetPlaylist() == False ):
-        if (item.media == "audio" ) :
+        if (item.media == "audio" ):
             command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', '-x', '--audio-format=mp3', '--audio-quality=0', item.url]
         else:
             command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', item.url]
     elif ( item.GetPlaylist() == True ):
-         if (item.media == "audio" ) :
+         if (item.media == "audio" ):
             command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '-o', '/dl/%(playlist)s/%(playlist_index)s_-_%(title)s.%(ext)s', '-x', '--audio-format=mp3', '--audio-quality=0', item.url]
         else:
             command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '-o', '/dl/%(playlist)s/%(playlist_index)s_-_%(title)s.%(ext)s', item.url]
@@ -155,7 +155,7 @@ def download(item):
         log.put(str(dumps(item.GetJobStatus_MSG())))
         print("Finished " + item.media + " downloading " + item.url)
         
-    if ( item.msg == '1' ) :
+    if ( item.msg == '1' ):
         log.put(str(dumps(item.GetJobStatus_MSG())))  """ Need nicer way to pass job completion, need to get filepath out of youtube-dl"""
     
 
