@@ -112,7 +112,7 @@ def q_put():
         CurJob = Job(url, media)
         dl_q.put( CurJob )
         print("URL: "+ CurJob.url ) 
-        q.put(json.dumps(CurJob.GetJobStatus_MSG()))
+        log_q.put(json.dumps(CurJob.GetJobStatus_MSG()))
         rtn = ["return", { "Job_ID" : str(CurJob.ID), "Media" : CurJob.media, "Return_Message" : CurJob.msg, "Progress" : CurJob.progress }]
     else:
         rtn =  ["return", { "Job_ID" : "Failed", "error" : "URL error" }]
