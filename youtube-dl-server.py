@@ -136,7 +136,7 @@ def dl_Playlist_Check(url):
         
 def download(item):
     item.SetProgress('Starting')
-    item.SetPlaylist(dl_Playlist_Check(item.url)
+    item.SetPlaylist(dl_Playlist_Check(item.url))
     if ( log ):
         log_q.put(dumps(item.GetJobStatus_MSG()))
     if ( item.GetPlaylist() == False ):
