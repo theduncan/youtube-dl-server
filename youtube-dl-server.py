@@ -80,8 +80,8 @@ class RedisQueue(object):
 
 
 
-q = RedisQueue('Msg_Return')
-log = RedisQueue('YT_Log')
+msg_q = RedisQueue('Msg_Return')
+log_q = RedisQueue('YT_Log')
 q.put('YT: Starting')
 
 app = Bottle()
@@ -138,7 +138,7 @@ def download(item):
     item.SetProgress('Starting')
     item.SetPlaylist(dl_Playlist_Check(item.url)
     if ( log == True ):
-        log.put(dumps(item.GetJobStatus_MSG()))
+        log_q.put(dumps(item.GetJobStatus_MSG()))
     if ( item.GetPlaylist() == False ):
         if (item.media == "audio" ):
             command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', '-x', '--audio-format=mp3', '--audio-quality=0', item.url]
@@ -152,11 +152,11 @@ def download(item):
     subprocess.call(command, shell=False)
     item.SetProgress('Finished')
     if ( log == True ) :
-        log.put(str(dumps(item.GetJobStatus_MSG())))
+        log_q.put(str(dumps(item.GetJobStatus_MSG())))
         print("Finished " + item.media + " downloading " + item.url)
         
     if ( item.msg == '1' ):
-        log.put(str(dumps(item.GetJobStatus_MSG())))  """ Need nicer way to pass job completion, need to get filepath out of youtube-dl"""
+        msg_q.put(str(dumps(item.GetJobStatus_MSG())))  """ Need nicer way to pass job completion, need to get filepath out of youtube-dl"""
     
 
 dl_q = Queue();
