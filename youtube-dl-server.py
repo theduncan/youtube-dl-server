@@ -30,7 +30,7 @@ class Job(object):
         
     def GetPlaylist (self):
         return self.Playlist
-    def SetPath(self, path)
+    def SetPath(self, path):
         self.Path = path
         
     def GetJobStatus_MSG (self, header='YT: Job'):
