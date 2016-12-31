@@ -24,10 +24,11 @@ class Job(object):
         
     def GetProgress (self):
         return self.progress
-    def SetPlaylist (self, playlist)
+        
+    def SetPlaylist (self, playlist):
         self.Playlist = playlist
         
-    def GetPlaylist (self)
+    def GetPlaylist (self):
         return self.Playlist
     def SetPath(self, path)
         self.Path = path
@@ -41,7 +42,8 @@ class RedisQueue(object):
     """Simple Queue with Redis Backend"""
     def __init__(self, name, namespace='queue', **redis_kwargs):
         """The default connection parameters are: host='localhost', port=6379, db=0"""
-        self.__db= redis.Redis(host='172.17.0.7', **redis_kwargs) """ Need to work out how to correctly link redis, so that host can go back to localhost, and not hardwired."""
+        self.__db= redis.Redis(host='172.17.0.7', **redis_kwargs) 
+        """ Need to work out how to correctly link redis, so that host can go back to localhost, and not hardwired."""
         self.key = '%s:%s' %(namespace, name)
 
     def qsize(self):
