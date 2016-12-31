@@ -82,7 +82,7 @@ class RedisQueue(object):
 
 msg_q = RedisQueue('Msg_Return')
 log_q = RedisQueue('YT_Log')
-q.put('YT: Starting')
+msg_q.put('YT: Starting')
 
 app = Bottle()
 log = True
