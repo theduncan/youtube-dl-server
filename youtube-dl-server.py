@@ -24,9 +24,16 @@ class Job(object):
         
     def GetProgress (self):
         return self.progress
-    
+    def SetPlaylist (self, playlist)
+        self.Playlist = playlist
+        
+    def GetPlaylist (self)
+        return self.Playlist
+    def SetPath(self, path)
+        self.Path = path
+        
     def GetJobStatus_MSG (self, header='YT: Job'):
-        rtn = [ header, { "ID" : str(self.ID), "URL" : self.url, "Media" : self.media,  "Progress" : self.progress}]
+        rtn = [ header, { "ID" : str(self.ID), "URL" : self.url, "Media" : self.media,  "Progress" : self.progress, "Playlist" : self.Playlist}]
         return rtn
 
 
@@ -34,7 +41,7 @@ class RedisQueue(object):
     """Simple Queue with Redis Backend"""
     def __init__(self, name, namespace='queue', **redis_kwargs):
         """The default connection parameters are: host='localhost', port=6379, db=0"""
-        self.__db= redis.Redis(host='172.17.0.7', **redis_kwargs)
+        self.__db= redis.Redis(host='172.17.0.7', **redis_kwargs) """ Need to work out how to correctly link redis, so that host can go back to localhost, and not hardwired."""
         self.key = '%s:%s' %(namespace, name)
 
     def qsize(self):
@@ -72,9 +79,11 @@ class RedisQueue(object):
 
 
 q = RedisQueue('Msg_Return')
+log = RedisQueue('YT_Log')
 q.put('YT: Starting')
 
 app = Bottle()
+log = True
 
 @app.route('/yt')
 def dl_queue_list():
@@ -113,29 +122,47 @@ def dl_worker():
         download(item)
         dl_q.task_done()
 
+        
+def dl_Playlist_Check(url):
+    command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '--skip-download', '--flat-playlist', item.url]
+    subprocess.call(command, shell=False, stdout=Output)
+    for line in Output:
+        if ( 'Downloading playlist' in line ):
+            return True
+    return False
+                
+        
 def download(item):
     item.SetProgress('Starting')
-    print("Starting " + item.media + " download of " + item.url)
-    if ( item.msg == '1' ) :
-        q.put(dumps(item.GetJobStatus_MSG()))
-    if (item.media == "audio" ) :
-        command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', '-x', '--audio-format=mp3', '--audio-quality=0', item.url]
-    else:
-        command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', item.url]
-		
+    item.SetPlaylist(dl_Playlist_Check(item.url)
+    if ( log == True ) :
+        log.put(dumps(item.GetJobStatus_MSG()))
+    if ( item.GetPlaylist() == False ):
+        if (item.media == "audio" ) :
+            command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', '-x', '--audio-format=mp3', '--audio-quality=0', item.url]
+        else:
+            command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', item.url]
+    elif ( item.GetPlaylist() == True ):
+         if (item.media == "audio" ) :
+            command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '-o', '/dl/%(playlist)s/%(playlist_index)s_-_%(title)s.%(ext)s', '-x', '--audio-format=mp3', '--audio-quality=0', item.url]
+        else:
+            command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '-o', '/dl/%(playlist)s/%(playlist_index)s_-_%(title)s.%(ext)s', item.url]
     subprocess.call(command, shell=False)
     item.SetProgress('Finished')
+    if ( log == True ) :
+        log.put(str(dumps(item.GetJobStatus_MSG())))
+        print("Finished " + item.media + " downloading " + item.url)
+        
     if ( item.msg == '1' ) :
-        q.put(str(dumps(item.GetJobStatus_MSG())))
-        print ("test", dumps(item.GetJobStatus_MSG()))
-    print("Finished " + item.media + " downloading " + item.url)
+        log.put(str(dumps(item.GetJobStatus_MSG())))  """ Need nicer way to pass job completion, need to get filepath out of youtube-dl"""
+    
 
 dl_q = Queue();
 done = False;
 dl_thread = Thread(target=dl_worker)
 dl_thread.start()
 
-print("Started download thread")
+log.put("YT: Started download thread")
 
 app.run(host='0.0.0.0', port=9191, debug=True)
 done = True
