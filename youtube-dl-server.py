@@ -145,7 +145,7 @@ def download(item):
         else:
             command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '-o', '/dl/%(title)s.%(ext)s', item.url]
     elif ( item.GetPlaylist() == True ):
-         if (item.media == "audio" ):
+        if (item.media == "audio" ):
             command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '-o', '/dl/%(playlist)s/%(playlist_index)s_-_%(title)s.%(ext)s', '-x', '--audio-format=mp3', '--audio-quality=0', item.url]
         else:
             command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '-o', '/dl/%(playlist)s/%(playlist_index)s_-_%(title)s.%(ext)s', item.url]
