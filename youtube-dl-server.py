@@ -127,7 +127,7 @@ def dl_worker():
 
         
 def dl_Playlist_Check(url):
-    command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '--skip-download', '--flat-playlist', item.url]
+    command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '--skip-download', '--flat-playlist', url]
     subprocess.call(command, shell=False, stdout=Output)
     for line in Output:
         if ( 'Downloading playlist' in line ):
