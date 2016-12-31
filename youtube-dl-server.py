@@ -8,6 +8,7 @@ from json import dumps
 from queue import Queue
 from bottle import route, run, Bottle, request, static_file
 from threading import Thread
+from datetime import datetime
 
 class Job(object):
     def __init__(self, url, media):
@@ -78,12 +79,10 @@ class RedisQueue(object):
         return self.get(False)
 
 
-
-
-
 msg_q = RedisQueue('Msg_Return')
 log_q = RedisQueue('YT_Log')
-msg_q.put('YT: Starting')
+msg_q.put('YT: Starting @ ', str(datetime.now()))
+log_q.put('YT: Starting @ ', str(datetime.now()))
 
 app = Bottle()
 log = True
