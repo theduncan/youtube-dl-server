@@ -156,7 +156,8 @@ def download(item):
         print("Finished " + item.media + " downloading " + item.url)
         
     if ( item.msg ):
-        msg_q.put(str(dumps(item.GetJobStatus_MSG())))  """ Need nicer way to pass job completion, need to get filepath out of youtube-dl"""
+        msg_q.put(str(dumps(item.GetJobStatus_MSG())))  
+        """ Need nicer way to pass job completion, need to get filepath out of youtube-dl"""
     
 
 dl_q = Queue();
