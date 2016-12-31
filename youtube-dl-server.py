@@ -17,6 +17,7 @@ class Job(object):
         self.progress = 'new'
         self.ID = uuid.uuid1()
         print ('New '+ media +' download: ', url)
+        self.Playlist = False
         return
         
     def SetProgress(self, progress):
