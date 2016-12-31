@@ -13,7 +13,7 @@ class Job(object):
     def __init__(self, url, media):
         self.url = url
         self.media = media
-        self.msg = '1'
+        self.msg = True
         self.progress = 'new'
         self.ID = uuid.uuid1()
         print ('New '+ media +' download: ', url)
@@ -34,7 +34,7 @@ class Job(object):
         self.Path = path
         
     def GetJobStatus_MSG (self, header='YT: Job'):
-        rtn = [ header, { "ID" : str(self.ID), "URL" : self.url, "Media" : self.media,  "Progress" : self.progress, "Playlist" : self.Playlist}]
+        rtn = [ header, { "ID" : str(self.ID), "URL" : self.url, "Media" : str(self.media),  "Progress" : self.progress, "Playlist" : self.Playlist}]
         return rtn
 
 
@@ -137,7 +137,7 @@ def dl_Playlist_Check(url):
 def download(item):
     item.SetProgress('Starting')
     item.SetPlaylist(dl_Playlist_Check(item.url)
-    if ( log == True ):
+    if ( log ):
         log_q.put(dumps(item.GetJobStatus_MSG()))
     if ( item.GetPlaylist() == False ):
         if (item.media == "audio" ):
@@ -151,11 +151,11 @@ def download(item):
             command = ['/usr/local/bin/youtube-dl', '-4', '--restrict-filenames', '-o', '/dl/%(playlist)s/%(playlist_index)s_-_%(title)s.%(ext)s', item.url]
     subprocess.call(command, shell=False)
     item.SetProgress('Finished')
-    if ( log == True ) :
+    if ( log ) :
         log_q.put(str(dumps(item.GetJobStatus_MSG())))
         print("Finished " + item.media + " downloading " + item.url)
         
-    if ( item.msg == '1' ):
+    if ( item.msg ):
         msg_q.put(str(dumps(item.GetJobStatus_MSG())))  """ Need nicer way to pass job completion, need to get filepath out of youtube-dl"""
     
 
