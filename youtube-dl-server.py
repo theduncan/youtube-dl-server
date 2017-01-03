@@ -101,13 +101,15 @@ def q_size():
 
 @app.route('/yt/q', method='POST')
 def q_put():
+    if ( request.forms.get( "url" ) == "" ):
+        return dumps( ["return", { "Job_ID" : "Failed", "error" : "URL error" }] )
+        
     url = request.forms.get( "url" )
 	
-    if ( request.forms.get( "media" ) != "" ):
-        media = request.forms.get( "media" )
-    else:
-        media = "video"
-		
+    media = request.POST.get( "media" , "video")
+    
+    MsgReturn = request.POST.get( "MsgReturn", False)
+
     if "" != url:
         CurJob = Job(url, media)
         dl_q.put( CurJob )
